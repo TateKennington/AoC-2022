@@ -1,12 +1,10 @@
+import Data.Char
 import Data.Function
 import System.IO
 
-normalise 'A' = 0
-normalise 'B' = 1
-normalise 'C' = 2
-normalise 'X' = 0
-normalise 'Y' = 1
-normalise 'Z' = 2
+normalise c =
+  let i = ord c
+   in if i >= ord 'X' then i - ord 'X' else i - ord 'A'
 
 playRound (a, b)
   | beat a == b = 6 + b + 1
