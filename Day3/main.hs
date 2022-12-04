@@ -29,9 +29,8 @@ part2 contents =
     & group 3
     & map
       ( \group ->
-          let init = Set.fromList $ head group
-              rest = map Set.fromList $ tail group
-              overlapSet = foldl Set.intersection init rest
+          let [first, second, third] = map Set.fromList group
+              overlapSet = Set.intersection first $ Set.intersection second third
               overlap = Set.elemAt 0 overlapSet
            in priority overlap
       )
