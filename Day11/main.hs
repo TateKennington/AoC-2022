@@ -1,6 +1,6 @@
 import Data.Char (isNumber)
 import Data.Function
-import Data.List (find, sortBy)
+import Data.List (find, partition, sortBy)
 import System.IO
 
 data Monkey = Monkey Int [Int] (Int -> Int) (Int, Int, Int)
@@ -31,16 +31,16 @@ processRound monkeys _ =
     & foldl
       ( \acc index ->
           let (Monkey score items operation (test, true, false)) = acc !! index
-              m = monkeys & map (\(Monkey _ _ _ (test, _, _)) -> test) & product
               newScore = score + length items
-              trueItems = items & map ((`mod` m) . operation) & filter (\item -> item `mod` test == 0)
-              falseItems = items & map ((`mod` m) . operation) & filter (\item -> item `mod` test /= 0)
+              (trueItems, falseItems) = items & map ((`mod` m) . operation) & partition ((== 0) . (`mod` test))
               trueMonkey = throw (acc !! true) trueItems
               falseMonkey = throw (acc !! false) falseItems
               newMonkey = Monkey newScore [] operation (test, true, false)
            in acc & replaceAt index newMonkey & replaceAt true trueMonkey & replaceAt false falseMonkey
       )
       monkeys
+  where
+    m = monkeys & map (\(Monkey _ _ _ (test, _, _)) -> test) & product
 
 part1 contents =
   let monkeys = foldl processRound (getMonkeys (lines contents) (`div` 3)) [1 .. 20]
