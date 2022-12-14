@@ -46,7 +46,7 @@ placeSand (set, maxDepth, pos) =
         else
           if isJust nextPos
             then placeSand (set, maxDepth, fromJust nextPos)
-            else 1 + getNextState (insert pos set, maxDepth)
+            else 1 + placeSand (insert pos set, maxDepth, (500, 0))
 
 placeSand' (set, maxDepth, pos) =
   let nextPositions = [pos `add` (0, 1), pos `add` (-1, 1), pos `add` (1, 1)]
@@ -56,19 +56,13 @@ placeSand' (set, maxDepth, pos) =
         else
           if pos == (500, 0)
             then 1
-            else 1 + getNextState' (insert pos set, maxDepth)
-
-getNextState (set, maxDepth) =
-  placeSand (set, maxDepth, (500, 0))
-
-getNextState' (set, maxDepth) =
-  placeSand' (set, maxDepth, (500, 0))
+            else 1 + placeSand' (insert pos set, maxDepth, (500, 0))
 
 part1 contents =
-  parseLines (lines contents) & getNextState & show
+  parseLines (lines contents) & (\(a, b) -> (a, b, (500, 0))) & placeSand & show
 
 part2 contents =
-  parseLines (lines contents) & second (+ 2) & getNextState' & show
+  parseLines (lines contents) & (\(a, b) -> (a, b + 2, (500, 0))) & placeSand' & show
 
 main = do
   small_contents <- readFile "in.small"
